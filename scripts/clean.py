@@ -10,7 +10,7 @@ df = pd.read_csv(INPUT_PATH)
 # CLEANING
 
 # keep only valid event types
-valid_event_types = {'click', 'login', 'scroll', 'view', 'buy', 'purchase'}
+valid_event_types = {'click', 'login', 'purchase', 'scroll', 'view'}
 df = df[df["event_type"].isin(valid_event_types)]
 
 # keep only positive durations
