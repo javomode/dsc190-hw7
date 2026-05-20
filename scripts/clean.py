@@ -25,7 +25,7 @@ df["duration_seconds"] = pd.to_numeric(df["duration_seconds"], errors="coerce")
 # -------------------------------------------------
 # 4. Timestamp cleanup
 # -------------------------------------------------
-df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601', errors='raise')
 
 # -------------------------------------------------
 # 5. NOW drop ALL invalid rows once (critical fix)
