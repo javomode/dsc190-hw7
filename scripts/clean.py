@@ -7,44 +7,43 @@ OUTPUT_PATH = Path("data/clean/events.csv")
 df = pd.read_csv(INPUT_PATH)
 
 # -------------------------------------------------
-# 1. Standardize "missing" values (CRITICAL)
+# 1. Standardize missing values
 # -------------------------------------------------
 df = df.replace(r"^\s*$", pd.NA, regex=True)
 
 # -------------------------------------------------
-# 2. Drop rows with ANY missing field
-# -------------------------------------------------
-df = df.dropna()
-
-# -------------------------------------------------
-# 3. Validate event_type
+# 2. Validate event_type FIRST
 # -------------------------------------------------
 valid_event_types = {'click', 'login', 'purchase', 'scroll', 'view'}
-df = df[df["event_type"].isin(valid_event_types)]
+df = df[df["event_type"].isin(valid_event_types)].copy()
 
 # -------------------------------------------------
-# 4. Clean numeric field
+# 3. Numeric cleanup
 # -------------------------------------------------
 df["duration_seconds"] = pd.to_numeric(df["duration_seconds"], errors="coerce")
 
-# must re-drop after coercion (important!)
+# -------------------------------------------------
+# 4. Timestamp cleanup
+# -------------------------------------------------
+df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+
+# -------------------------------------------------
+# 5. NOW drop ALL invalid rows once (critical fix)
+# -------------------------------------------------
 df = df.dropna()
-df = df[df["duration_seconds"] > 0]
+df = df[df["duration_seconds"] > 0].copy()
 
 df["duration_seconds"] = df["duration_seconds"].astype(int)
 
 # -------------------------------------------------
-# 5. Timestamp normalization (STRICT ISO 8601)
+# 6. Force strict ISO format
 # -------------------------------------------------
-df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
-df = df.dropna(subset=["timestamp"])
-
-df["timestamp"] = df["timestamp"].apply(
+df["timestamp"] = df["timestamp"].map(
     lambda x: x.strftime("%Y-%m-%dT%H:%M:%S")
 )
 
 # -------------------------------------------------
-# 6. Write output
+# 7. Output
 # -------------------------------------------------
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 df.to_csv(OUTPUT_PATH, index=False)
