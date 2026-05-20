@@ -20,6 +20,8 @@ df = df.dropna(subset=["duration_seconds"])
 
 df = df[df["duration_seconds"] > 0]
 
+df["duration_seconds"] = df["duration_seconds"].astype(int)
+
 # normalize timestamps
 df["timestamp"] = pd.to_datetime(
     df["timestamp"],
@@ -29,7 +31,11 @@ df["timestamp"] = pd.to_datetime(
 
 df = df.dropna()
 
-df["timestamp"] = df["timestamp"].dt.strftime("%Y-%m-%dT%H:%M:%S")
+df["timestamp"] = pd.to_datetime(
+    df["timestamp"],
+    format="mixed",
+    errors="coerce"
+)
     
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
 

@@ -9,14 +9,12 @@ df = pd.read_csv(INPUT_PATH)
 
 # FEATURES
 
-# temporary conversion of timestamp column to timestamp
-df["timestamp"] = pd.to_datetime(df["timestamp"])
-
 # add column for duration in minutes
+df["duration_seconds"] = pd.to_numeric(df["duration_seconds"], errors="raise")
 df["duration_minutes"] = df["duration_seconds"] / 60
 
 # add column for name of day of the week
-df['weekday'] = df.timestamp.dt.day_name()
+df["weekday"] = pd.to_datetime(df["timestamp"]).dt.day_name()
 
 
 OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
