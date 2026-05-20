@@ -14,6 +14,10 @@ valid_event_types = {'click', 'login', 'purchase', 'scroll', 'view'}
 df = df[df["event_type"].isin(valid_event_types)]
 
 # keep only positive durations
+df["duration_seconds"] = pd.to_numeric(df["duration_seconds"], errors="coerce")
+
+df = df.dropna(subset=["duration_seconds"])
+
 df = df[df["duration_seconds"] > 0]
 
 # normalize timestamps
